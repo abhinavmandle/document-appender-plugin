@@ -1,0 +1,10 @@
+apply from: '../../epagesj/gradle/plugins.gradle'
+
+dependencies {
+    compile project(':index')
+}
+
+project(':epagesj-server').dependencies {
+    testRuntime project(project.path)
+}
+
