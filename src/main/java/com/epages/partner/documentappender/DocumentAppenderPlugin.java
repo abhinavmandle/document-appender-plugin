@@ -1,7 +1,7 @@
 package com.epages.partner.documentappender;
 
-import com.epages.commons.plugin.Plugin;
 import com.epages.index.domain.solrj.doc.DocumentAppender;
+import com.epages.plugin.Plugin;
 import com.epages.product.attribute.entry.CustomAttributeMapEntry;
 import com.epages.product.attribute.entry.CustomAttributeValue;
 import com.epages.product.reader.AttributeReader;

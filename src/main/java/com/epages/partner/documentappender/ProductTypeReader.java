@@ -38,7 +38,6 @@ final class ProductTypeReader extends BasePeekableReader<CustomAttributeValue, C
             @Override
             public CustomAttributeMapEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
                 AttributeKey key = new AttributeKeyBuilder(rs.getInt("main_productid"), rs.getString("attributekey")).withVariationId(getVariationId(rs)).localised(rs.getString("langcode")).build();
-                // TODO: "ProductType" should be localized somehow
                 CustomAttributeValue attributeValue = new CustomAttributeValue("ProductType", CustomSearchFilterAttributeType.PreDefLocalizedString, rs.getString("langcode"));
                 attributeValue.setAttributeValue(rs.getString("attributevalue"), 0);
                 attributeValue.setIssearchfilter(1);
@@ -49,14 +48,15 @@ final class ProductTypeReader extends BasePeekableReader<CustomAttributeValue, C
         public static final String SQL = new StringBuilder()
         .append("SELECT COALESCE(p.superproductid, p.productid) as main_productid,")
         .append(" \"ProductType\" as attributekey, ")
-        .append(" l.code2 as langcode, lsa.value as attributevalue, p.superproductid, p.productid ")
+        .append(" l.code2 as langcode, lsa.value as attributevalue, o.alias, p.superproductid, p.productid ")
         .append(" FROM product p ")
         .append(" JOIN object o on p.productid=o.objectid")
+        .append(" JOIN object oc on o.classid=oc.objectid")
          .append(" JOIN localizedstringattribute lsa on (o.classid = lsa.objectid) ")
          .append(" JOIN attribute a ON lsa.attributeid = a.attributeid AND a.type = 'LocalizedString' ")
          .append(" JOIN language  l ON l.languageid = lsa.languageid ")
          .append(" JOIN object lsao on lsa.attributeid=lsao.objectid")
-         .append(" WHERE lsao.alias=\"Name\"")
+         .append(" WHERE oc.alias != \"ProductClass\" AND lsao.alias = \"Name\"")
          .append(" AND p.shopid = ? %s ")
          .append(" ORDER BY main_productid").toString();
 
