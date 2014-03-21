@@ -2,6 +2,7 @@ package com.epages.partner.documentappender;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -11,15 +12,14 @@ import com.epages.dao.ProductReaderPreparedStatementSetter;
 import com.epages.datasource.api.DataSourceLookup;
 import com.epages.metadata.JdbcCursorItemReader4EPJ;
 import com.epages.product.Product;
-import com.epages.product.attribute.entry.AttributeKey;
-import com.epages.product.attribute.entry.AttributeKeyBuilder;
-import com.epages.product.attribute.entry.CustomAttributeMapEntry;
+import com.epages.product.attribute.entry.CustomAttribute;
 import com.epages.product.attribute.entry.CustomAttributeValue;
 import com.epages.product.attribute.entry.CustomSearchFilterAttributeType;
+import com.epages.product.attribute.entry.LocalizedKey;
 import com.epages.product.reader.AttributeValidator;
-import com.epages.product.reader.BasePeekableReader;
+import com.epages.product.reader.BaseSingleItemPeekableReader;
 
-final class ProductTypeReader extends BasePeekableReader<CustomAttributeValue, CustomAttributeMapEntry> {
+final class ProductTypeReader extends BaseSingleItemPeekableReader<CustomAttributeValue, CustomAttribute> {
 
     @Inject
     public ProductTypeReader(AttributeValidator validator, DataSourceLookup dataSourceLookup) {
@@ -27,27 +27,27 @@ final class ProductTypeReader extends BasePeekableReader<CustomAttributeValue, C
     }
 
     @Override
-    public void addToProduct(Product product, CustomAttributeMapEntry attribute) {
+    protected void addToProduct(Product product, CustomAttribute attribute) {
         product.addAttribute(attribute);
     }
-    
-    static final class Reader extends JdbcCursorItemReader4EPJ<CustomAttributeMapEntry> {
 
-        private static final RowMapper<CustomAttributeMapEntry> ROW_MAPPER =  new RowMapper<CustomAttributeMapEntry>() {
+    static final class Reader extends JdbcCursorItemReader4EPJ<CustomAttribute> {
+
+        private static final RowMapper<CustomAttribute> ROW_MAPPER =  new RowMapper<CustomAttribute>() {
 
             @Override
-            public CustomAttributeMapEntry mapRow(ResultSet rs, int rowNum) throws SQLException {
-                AttributeKey key = new AttributeKeyBuilder(rs.getInt("main_productid"), rs.getString("attributekey")).withVariationId(getVariationId(rs)).localised(rs.getString("langcode")).build();
-                CustomAttributeValue attributeValue = new CustomAttributeValue("ProductType", CustomSearchFilterAttributeType.PreDefLocalizedString, rs.getString("langcode"));
+            public CustomAttribute mapRow(ResultSet rs, int rowNum) throws SQLException {
+                final LocalizedKey key = new LocalizedKey("ProductType", new Locale(rs.getString("langcode")));
+                // TODO: read a localized name for "ProductType".
+                CustomAttributeValue attributeValue = new CustomAttributeValue("ProductType", CustomSearchFilterAttributeType.PreDefLocalizedString, new Locale(rs.getString("langcode")));
                 attributeValue.setAttributeValue(rs.getString("attributevalue"), 0);
-                attributeValue.setIssearchfilter(1);
-                return new CustomAttributeMapEntry(key, attributeValue);
+                attributeValue.setIsSearchfilter(1);
+                return new CustomAttribute(rs.getInt("main_productid"), 0, key, attributeValue);
             }
         };
 
         public static final String SQL = new StringBuilder()
         .append("SELECT COALESCE(p.superproductid, p.productid) as main_productid,")
-        .append(" \"ProductType\" as attributekey, ")
         .append(" l.code2 as langcode, lsa.value as attributevalue, o.alias, p.superproductid, p.productid ")
         .append(" FROM product p ")
         .append(" JOIN object o on p.productid=o.objectid")

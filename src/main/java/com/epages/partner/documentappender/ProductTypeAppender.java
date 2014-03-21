@@ -1,16 +1,13 @@
 package com.epages.partner.documentappender;
 
-import java.util.Map.Entry;
-
 import javax.inject.Inject;
 
 import org.apache.solr.common.SolrInputDocument;
 
-import com.epages.index.domain.solrj.doc.DocumentAppender;
-import com.epages.index.domain.solrj.doc.DocumentValueAppender;
+import com.epages.index.appender.DocumentAppender;
+import com.epages.index.appender.DocumentValueAppender;
 import com.epages.product.IProduct;
-import com.epages.product.attribute.entry.CustomAttributeValue;
-import com.epages.product.attribute.entry.LocalizedKey;
+import com.epages.product.attribute.entry.CustomAttribute;
 import com.google.inject.name.Named;
 
 public class ProductTypeAppender implements DocumentAppender {
@@ -24,7 +21,7 @@ public class ProductTypeAppender implements DocumentAppender {
 
     @Override
     public void append(SolrInputDocument doc, IProduct product) {
-        for (Entry<LocalizedKey, CustomAttributeValue> entry : product.getAllAttributes(LocalizedKey.class, CustomAttributeValue.class)) {
+        for (CustomAttribute entry : product.getAllLocalizedCustomAttributes()) {
             if ("ProductType".equals(entry.getKey().getKeyName())) {
                 this.appender.append(entry.getKey().getLang()+ "_CustomLocale", entry.getValue().getValue(), doc);
             }
