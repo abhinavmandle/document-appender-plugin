@@ -23,6 +23,7 @@ public class ProductTypeAppender implements DocumentAppender {
     public void append(SolrInputDocument doc, IProduct product) {
         for (CustomAttribute entry : product.getAllLocalizedCustomAttributes()) {
             if ("ProductType".equals(entry.getKey().getKeyName())) {
+                // TODO: Use our own SolrFieldNames?
                 this.appender.append(entry.getKey().getLang()+ "_CustomLocale", entry.getValue().getValue(), doc);
             }
         }
