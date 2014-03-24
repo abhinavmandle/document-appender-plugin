@@ -28,7 +28,7 @@ public class DocumentAppenderPlugin extends AbstractPlugin {
     static class ConfigFileProvider extends EPJConfigProvider {
         @Override
         public Configuration get() {
-            return getConfigURI("conf/search-popularity.conf");
+            return getConfigURI("conf/document-appender-plugin.conf");
         }
     }
 
