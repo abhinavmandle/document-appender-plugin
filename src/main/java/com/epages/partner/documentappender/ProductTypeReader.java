@@ -19,6 +19,9 @@ import com.epages.product.attribute.entry.LocalizedKey;
 import com.epages.product.reader.AttributeValidator;
 import com.epages.product.reader.BaseSingleItemPeekableReader;
 
+/**
+ * Example of using ProductTypes as facets.
+ */
 final class ProductTypeReader extends BaseSingleItemPeekableReader<CustomAttributeValue, CustomAttribute> {
 
     @Inject
@@ -38,8 +41,10 @@ final class ProductTypeReader extends BaseSingleItemPeekableReader<CustomAttribu
             @Override
             public CustomAttribute mapRow(ResultSet rs, int rowNum) throws SQLException {
                 final LocalizedKey key = new LocalizedKey("ProductType", new Locale(rs.getString("langcode")));
-                // TODO: read a localized name for "ProductType".
-                CustomAttributeValue attributeValue = new CustomAttributeValue("ProductType", CustomSearchFilterAttributeType.PreDefLocalizedString, new Locale(rs.getString("langcode")));
+                CustomAttributeValue attributeValue = new CustomAttributeValue(
+                        // TODO: You need to localize the term "Product Type" correctly.
+                        ("de".equals(rs.getString("langcode")) ? "Produkttyp" : "Product type"),
+                        CustomSearchFilterAttributeType.PreDefLocalizedString, new Locale(rs.getString("langcode")));
                 attributeValue.setAttributeValue(rs.getString("attributevalue"), 0);
                 attributeValue.setIsSearchfilter(1);
                 return new CustomAttribute(rs.getInt("main_productid"), 0, key, attributeValue);
