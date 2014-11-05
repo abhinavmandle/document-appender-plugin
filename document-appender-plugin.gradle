@@ -4,5 +4,8 @@ dependencies {
     compile project(':index')
 }
 
-
 version = "1.0"
+
+project(':epagesj-server').dependencies {
+    testRuntime project(project.path)
+}
