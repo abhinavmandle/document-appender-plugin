@@ -8,8 +8,8 @@ import javax.inject.Inject;
 
 import org.springframework.jdbc.core.RowMapper;
 
-import com.epages.dao.ProductReaderPreparedStatementSetter;
-import com.epages.datasource.api.DataSourceLookup;
+import com.epages.product.ProductReaderPreparedStatementSetter;
+import com.epages.datasource.DataSourceLookup;
 import com.epages.metadata.JdbcCursorItemReader4EPJ;
 import com.epages.product.Product;
 import com.epages.product.attribute.entry.CustomAttribute;
